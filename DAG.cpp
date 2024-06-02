@@ -2,28 +2,12 @@
 
 #include <queue>
 
-bool DAG::AddIntLink(Port* from, Port* to)
+void DAG::AddLink(OutputPort& output, InputPort& input)
 {
-	// Cannot connect port of same type
-	if (from->GetPortType() == to->GetPortType())
-		return false;
+	input.SetIncomingValue(&output.GetValue());
 
-	IntOutputPort* outputPort = nullptr;
-	IntInputPort* inputPort = nullptr;
-	if (from->GetPortType() == PortType::Input)
-	{
-		inputPort = dynamic_cast<IntInputPort*>(from);
-		outputPort = dynamic_cast<IntOutputPort*>(to);
-	}
-	else
-	{
-		inputPort = dynamic_cast<IntInputPort*>(to);
-		outputPort = dynamic_cast<IntOutputPort*>(from);
-	}
-
-	inputPort->SetIncomingValue(&outputPort->GetValue());
-
-	m_AdjList[outputPort->GetOwningNode()->GetNodeID()].push_back(inputPort->GetOwningNode()->GetNodeID());
+	// Add link to adjacency list
+	m_AdjList[output.GetOwningNode()->GetNodeID()].push_back(input.GetOwningNode()->GetNodeID());
 }
 
 void DAG::TopologicalSort()

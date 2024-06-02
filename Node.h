@@ -16,12 +16,12 @@ public:
 
 	UUID GetNodeID() const { return m_NodeID; }
 
-	Port* GetInputPort(uint32_t index) { return m_InputPorts[index]; }
-	Port* GetOutputPort(uint32_t index) { return m_OutputPorts[index]; }
+	InputPort& GetInputPort(uint32_t index) { return m_InputPorts[index]; }
+	OutputPort& GetOutputPort(uint32_t index) { return m_OutputPorts[index]; }
 
 protected:
-	std::vector<Port*> m_InputPorts;
-	std::vector<Port*> m_OutputPorts;
+	std::vector<InputPort> m_InputPorts;
+	std::vector<OutputPort> m_OutputPorts;
 
 private:
 	UUID m_NodeID;
@@ -32,19 +32,15 @@ class EndNode : public Node
 public:
 	EndNode()
 	{
-		IntInputPort* inputPort = new IntInputPort(this);
+		InputPort inputPort(this);
 		m_InputPorts.push_back(inputPort);
 	};
 
-	virtual ~EndNode()
-	{
-		for (auto port : m_InputPorts)
-			delete port;
-	}
+	virtual ~EndNode() = default;
 
 	void Evaluate() override
 	{
-		value = *dynamic_cast<IntInputPort*>(m_InputPorts[0])->GetIncomingValue();
+		value = m_InputPorts[0].GetIncomingValue()->IntValue;
 	}
 
 	int GetValue() { return value; }
@@ -59,15 +55,14 @@ public:
 	IntNode(int val)
 	{
 		m_OutputPorts.resize(1);
-		IntOutputPort* outputPort = new IntOutputPort(this);
-		outputPort->SetValue(val);
+
+		PortData data;
+		data.IntValue = val;
+		OutputPort outputPort(this);
+		outputPort.SetValue(data);
 		m_OutputPorts[0] = outputPort;
 	}
-	virtual ~IntNode()
-	{
-		for (auto& port : m_OutputPorts)
-			delete port;
-	}
+	virtual ~IntNode() = default;
 
 	void Evaluate() override {}
 };
@@ -80,29 +75,21 @@ public:
 		m_InputPorts.resize(2);
 		m_OutputPorts.resize(1);
 
-		IntInputPort* inputPort1 = new IntInputPort(this);
+		InputPort inputPort1(this);
 		m_InputPorts[0] = inputPort1;
-		IntInputPort* inputPort2 = new IntInputPort(this);
+		InputPort inputPort2(this);
 		m_InputPorts[1] = inputPort2;
 
-		IntOutputPort* outputPort = new IntOutputPort(this);
+		OutputPort outputPort(this);
 		m_OutputPorts[0] = outputPort;
 	}
 
-	virtual ~MultiplyNode()
-	{
-		for (auto& port : m_InputPorts)
-			delete port;
-		for (auto& port : m_OutputPorts)
-			delete port;
-	}
+	virtual ~MultiplyNode() = default;
 
 	void Evaluate() override
 	{
-		IntOutputPort* outputPort = dynamic_cast<IntOutputPort*>(m_OutputPorts[0]);
-		IntInputPort* input1 = dynamic_cast<IntInputPort*>(m_InputPorts[0]);
-		IntInputPort* input2 = dynamic_cast<IntInputPort*>(m_InputPorts[1]);
-
-		outputPort->SetValue(*input1->GetIncomingValue() * *input2->GetIncomingValue());
+		PortData data;
+		data.IntValue = m_InputPorts[0].GetIncomingValue()->IntValue * m_InputPorts[1].GetIncomingValue()->IntValue;
+		m_OutputPorts[0].SetValue(data);
 	}
 };

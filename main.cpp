@@ -32,13 +32,13 @@ int main()
 	//dag.AddNode(multiplyNode3);
 	//dag.AddNode(endNode);
 
-	dag.AddIntLink(int5Node->GetOutputPort(0), multiplyNode1->GetInputPort(0));
-	dag.AddIntLink(int10Node->GetOutputPort(0), multiplyNode1->GetInputPort(1));
-	dag.AddIntLink(int10Node->GetOutputPort(0), multiplyNode2->GetInputPort(0));
-	dag.AddIntLink(int6Node-> GetOutputPort(0), multiplyNode2->GetInputPort(1));
-	dag.AddIntLink(multiplyNode1->GetOutputPort(0), multiplyNode3->GetInputPort(0));
-	dag.AddIntLink(multiplyNode2->GetOutputPort(0), multiplyNode3->GetInputPort(1));
-	dag.AddIntLink(multiplyNode3->GetOutputPort(0), endNode->GetInputPort(0));
+	dag.AddLink(int5Node->GetOutputPort(0), multiplyNode1->GetInputPort(0));
+	dag.AddLink(int10Node->GetOutputPort(0), multiplyNode1->GetInputPort(1));
+	dag.AddLink(int10Node->GetOutputPort(0), multiplyNode2->GetInputPort(0));
+	dag.AddLink(int6Node-> GetOutputPort(0), multiplyNode2->GetInputPort(1));
+	dag.AddLink(multiplyNode1->GetOutputPort(0), multiplyNode3->GetInputPort(0));
+	dag.AddLink(multiplyNode2->GetOutputPort(0), multiplyNode3->GetInputPort(1));
+	dag.AddLink(multiplyNode3->GetOutputPort(0), endNode->GetInputPort(0));
 
 	dag.TopologicalSort();
 	dag.Evaluate();

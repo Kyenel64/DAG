@@ -12,9 +12,12 @@ public:
 	DAG() {}
 
 	void AddNode(Node *node) { m_Nodes[node->GetNodeID()] = node; }
-	bool AddIntLink(Port* output, Port* input);
+	void AddLink(OutputPort& output, InputPort& input);
 
+	// Run whenever there are changes in the graph
 	void TopologicalSort();
+
+	// Run whenever data is updated.
 	void Evaluate();
 
 private:
