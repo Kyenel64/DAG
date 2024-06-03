@@ -4,7 +4,7 @@
 
 static uint32_t hashIndex = 0;
 
-using UUID = uint32_t;
+using NodeID = uint32_t;
 
 class Node
 {
@@ -14,7 +14,7 @@ public:
 
 	virtual void Evaluate() = 0;
 
-	UUID GetNodeID() const { return m_NodeID; }
+	NodeID GetNodeID() const { return m_NodeID; }
 
 	InputPort& GetInputPort(uint32_t index) { return m_InputPorts[index]; }
 	OutputPort& GetOutputPort(uint32_t index) { return m_OutputPorts[index]; }
@@ -24,7 +24,7 @@ protected:
 	std::vector<OutputPort> m_OutputPorts;
 
 private:
-	UUID m_NodeID;
+	NodeID m_NodeID;
 };
 
 class EndNode : public Node
@@ -32,7 +32,7 @@ class EndNode : public Node
 public:
 	EndNode()
 	{
-		InputPort inputPort(this);
+		InputPort inputPort = { this };
 		m_InputPorts.push_back(inputPort);
 	};
 
@@ -40,7 +40,7 @@ public:
 
 	void Evaluate() override
 	{
-		value = m_InputPorts[0].GetIncomingValue()->IntValue;
+		value = m_InputPorts[0].IncomingValue->IntValue;
 	}
 
 	int GetValue() { return value; }
@@ -58,11 +58,16 @@ public:
 
 		PortData data;
 		data.IntValue = val;
-		OutputPort outputPort(this);
-		outputPort.SetValue(data);
+		OutputPort outputPort = { this };
+		outputPort.Value.IntValue = val;
 		m_OutputPorts[0] = outputPort;
 	}
 	virtual ~IntNode() = default;
+
+	void SetValue(int val)
+	{
+		m_OutputPorts[0].Value.IntValue = val;
+	}
 
 	void Evaluate() override {}
 };
@@ -75,12 +80,12 @@ public:
 		m_InputPorts.resize(2);
 		m_OutputPorts.resize(1);
 
-		InputPort inputPort1(this);
+		InputPort inputPort1 = { this };
 		m_InputPorts[0] = inputPort1;
-		InputPort inputPort2(this);
+		InputPort inputPort2 = { this };
 		m_InputPorts[1] = inputPort2;
 
-		OutputPort outputPort(this);
+		OutputPort outputPort = { this };
 		m_OutputPorts[0] = outputPort;
 	}
 
@@ -89,7 +94,7 @@ public:
 	void Evaluate() override
 	{
 		PortData data;
-		data.IntValue = m_InputPorts[0].GetIncomingValue()->IntValue * m_InputPorts[1].GetIncomingValue()->IntValue;
-		m_OutputPorts[0].SetValue(data);
+		data.IntValue = m_InputPorts[0].IncomingValue->IntValue * m_InputPorts[1].IncomingValue->IntValue;
+		m_OutputPorts[0].Value = data;
 	}
 };

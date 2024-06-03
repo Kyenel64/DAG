@@ -21,7 +21,7 @@ public:
 	void Evaluate();
 
 private:
-	std::unordered_map<UUID, Node*> m_Nodes;
-	std::unordered_map<UUID, std::vector<UUID>> m_AdjList;
-	std::vector<UUID> m_TopSortedNodes;
+	std::unordered_map<NodeID, Node*> m_Nodes;
+	std::unordered_map<NodeID, std::vector<NodeID>> m_AdjList;
+	std::vector<NodeID> m_TopSortedNodes;
 };
