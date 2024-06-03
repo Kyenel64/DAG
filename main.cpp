@@ -2,48 +2,32 @@
 #include "Node.h"
 
 #include <iostream>
+#include <memory>
 
 int main()
 {
-	IntNode *int5Node = new IntNode(5);
-	IntNode *int10Node = new IntNode(10);
-	IntNode *int6Node = new IntNode(6);
-	MultiplyNode *multiplyNode1 = new MultiplyNode();
-	MultiplyNode *multiplyNode2 = new MultiplyNode();
-	MultiplyNode *multiplyNode3 = new MultiplyNode();
-	EndNode *endNode = new EndNode();
-
 	DAG dag;
-	dag.AddNode(endNode);
-	dag.AddNode(multiplyNode1);
-	dag.AddNode(multiplyNode2);
-	dag.AddNode(multiplyNode3);
-	dag.AddNode(int5Node);
-	dag.AddNode(int10Node);
-	dag.AddNode(int6Node);
+	std::shared_ptr<EndNode> endNode = dag.AddNode<EndNode>();
+	std::shared_ptr<MultiplyNode> multiplyNode1 = dag.AddNode<MultiplyNode>();
+	std::shared_ptr<MultiplyNode> multiplyNode2 = dag.AddNode<MultiplyNode>();
+	std::shared_ptr<MultiplyNode> multiplyNode3 = dag.AddNode<MultiplyNode>();
+	std::shared_ptr<IntNode> intNode1 = dag.AddNode<IntNode>();
+	std::shared_ptr<IntNode> intNode2 = dag.AddNode<IntNode>();
+	std::shared_ptr<IntNode> intNode3 = dag.AddNode<IntNode>();
 
+	intNode1->SetValue(5);
+	intNode2->SetValue(10);
+	intNode3->SetValue(6);
 
-	// topSorted for testing
-	//dag.AddNode(int5Node);
-	//dag.AddNode(int10Node);
-	//dag.AddNode(int6Node);
-	//dag.AddNode(multiplyNode1);
-	//dag.AddNode(multiplyNode2);
-	//dag.AddNode(multiplyNode3);
-	//dag.AddNode(endNode);
-
-	dag.AddLink(int5Node->GetOutputPort(0), multiplyNode1->GetInputPort(0));
-	dag.AddLink(int10Node->GetOutputPort(0), multiplyNode1->GetInputPort(1));
-	dag.AddLink(int10Node->GetOutputPort(0), multiplyNode2->GetInputPort(0));
-	dag.AddLink(int6Node->GetOutputPort(0), multiplyNode2->GetInputPort(1));
-	dag.AddLink(multiplyNode1->GetOutputPort(0), multiplyNode3->GetInputPort(0));
-	dag.AddLink(multiplyNode2->GetOutputPort(0), multiplyNode3->GetInputPort(1));
-	dag.AddLink(multiplyNode3->GetOutputPort(0), endNode->GetInputPort(0));
+	dag.AddLink(intNode1, 0, multiplyNode1, 0);
+	dag.AddLink(intNode2, 0, multiplyNode1, 1);
+	dag.AddLink(intNode2, 0, multiplyNode2, 0);
+	dag.AddLink(intNode3, 0, multiplyNode2, 1);
+	dag.AddLink(multiplyNode1, 0, multiplyNode3, 0);
+	dag.AddLink(multiplyNode2, 0, multiplyNode3, 1);
+	dag.AddLink(multiplyNode3, 0, endNode, 0);
 
 	dag.TopologicalSort();
-	dag.Evaluate();
-
-	int5Node->SetValue(1000);
 	dag.Evaluate();
 
 	std::cout << endNode->GetValue() << std::endl;
